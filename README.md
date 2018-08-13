@@ -1,4 +1,3 @@
-Overview
 This directory contains code related to the orthographic
 implementation of jitternet. This implementation of
 jitternet seeks to autoencode position-invariant features
