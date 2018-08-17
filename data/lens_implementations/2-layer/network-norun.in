@@ -1,0 +1,43 @@
+#This is an autoencoder (with two hidden layer, feed forward)
+#which utilizes jittered input units. The jittered long vectors
+#of inputs represent orthographic word forms shifted across
+#slots, passed through a bottleneck of two hidden layers, each
+#with 50 units, with targets (non-jittered) of the same
+#orthographic word forms as on the input layer.
+
+#this network used a list of 2888 monosyllabic words in
+#English as inputs.
+
+
+#the net:
+addNet JitterNet3k
+
+addGroup slot1 26 INPUT
+addGroup slot2 26 INPUT
+addGroup slot3 26 INPUT
+addGroup slot4 26 INPUT
+addGroup slot5 26 INPUT
+addGroup slot6 26 INPUT
+addGroup slot7 26 INPUT
+addGroup slot8 26 INPUT
+addGroup slot9 26 INPUT
+addGroup slot10 26 INPUT
+addGroup slot11 26 INPUT
+addGroup hidden1 50 USE_OUTPUT_HIST WRITE_OUTPUTS
+addGroup hidden2 50 USE_OUTPUT_HIST WRITE_OUTPUTS
+addGroup output 260 OUTPUT USE_OUTPUT_HIST USE_TARGET_HIST WRITE_OUTPUTS STANDARD_CRIT
+
+set input {slot1 slot2 slot3 slot4 slot5 slot6 slot7 slot8 slot9 slot10 slot11}
+connectGroups $input hidden1 -projection FULL -mean 0 -range 0.18
+connectGroups hidden1 hidden2 -projection FULL -mean 0 -range 0.40
+connectGroups hidden2 output -projection FULL -mean 0 -range 0.40
+
+#example file
+loadExamples train.ex -exmode PERMUTED -set train
+#loadExamples train.ex -exmode ORDERED -set train
+loadExamples train.ex -exmode ORDERED -set test
+
+setObj batchSize 500
+setObj numUpdates 1000
+setObj criterion 0
+setObj reportInterval 50

@@ -1,0 +1,54 @@
+---
+title: "jitternet_orthography_summary"
+author: "mcb"
+date: "8/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+require(magrittr)
+require(dplyr)
+```
+
+```{r orthography}
+# Generate some master data:
+# The representations with a column for word
+orth_reps = read.csv("3k-JitterNet-OrthReps.csv")
+rownames(orth_reps) <- orth_reps$word
+
+# A matrix with only the activations
+orth_reps %>% select(-word) -> orth_activations
+
+#Generate a distance matrix:
+orth_distances = dist(orth_activations)
+
+# Scale the distance matrix into three dimensions (if you want to use three)
+orth_distances_scaled = as.data.frame(cmdscale(orth_distances, k = 3))
+orth_distances_scaled$word = rownames(orth_distances_scaled)
+```
+
+
+A plot of all the orthographic words forms in two dimensions:
+```{r orthography, echo=FALSE}
+# Plot in 2 dimensions
+ggplot(orth_distances_scaled, aes(x = V1, y = V2, label = word)) +
+    geom_text() +
+    labs(title = "MDS over two dimensions", x = "Dimension 2", y = "Dimension 3") +
+    theme(plot.title = element_text(hjust = 0.5))
+```
+
+It is more legible to subset. Here let's look at the words that start with "s":
+
+```{r orthography, echo = FALSE}
+orth_distances_scaled %>% filter(str_detect(word, "^s")) -> data_plot
+
+ggplot(data_plot, aes(x = V1, y = V2, label = word)) +
+    geom_text() +
+    labs(title = "MDS over two dimensions", subtitle = "^s words only", x = "Dimension 2", y = "Dimension 3") +
+    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+```
+
+
