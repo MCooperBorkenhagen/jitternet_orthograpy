@@ -1,6 +1,4 @@
-*.rda
-*.txt
-*.xls
-*.xlsx
-*.csv
 .Rproj.user
+.Rhistory
+.RData
+.Ruserdata
